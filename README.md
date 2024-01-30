@@ -1,7 +1,7 @@
 # Dozerformer
-Code of paper ["Dozerformer: Sequence Adaptive Sparse Transformer for Multivariate Time Series Forecasting"] (ICLR 2024 submission)
+Code of paper ["Dozerformer: Sequence Adaptive Sparse Transformer for Multivariate Time Series Forecasting"] ([Arxiv](https://arxiv.org/abs/2312.06874))
 
-The Dozerformer achieve SOTA on nine benchmarks.
+The Dozerformer achieves SOTA on nine benchmarks.
 
 ## Introduction
 Transformers have achieved remarkable performance in multivariate time series(MTS) forecasting due to their capability to capture long-term dependencies. However, the canonical attention mechanism has two key limitations: (1) its quadratic time complexity limits the sequence length, and (2) it generates future values from the entire historical sequence.
