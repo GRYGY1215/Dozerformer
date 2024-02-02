@@ -25,7 +25,7 @@ We evaluated the proposed Dozerformer framework with recent state-of-the-art met
    bash ./scripts/ILI.sh
    ```
    
-## Train and Test
+## Citation
 If you find this repository beneficial for your research, kindly include a citation:
 ```
 @misc{zhang2023dozerformer,
