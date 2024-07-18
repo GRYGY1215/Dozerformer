@@ -1,5 +1,6 @@
 # Dozerformer
-Code of paper ["Dozerformer: Sequence Adaptive Sparse Transformer for Multivariate Time Series Forecasting"] ([Arxiv](https://arxiv.org/abs/2312.06874))
+Code of paper ["Dozerformer: Sparse transformer with local and seasonal adaptation for multivariate time series forecasting
+"] (https://www.nature.com/articles/s41598-024-66886-1)
 
 The Dozerformer achieves SOTA on nine benchmarks.
 
@@ -28,13 +29,16 @@ We evaluated the proposed Dozerformer framework with recent state-of-the-art met
 ## Citation
 If you find this repository beneficial for your research, kindly include a citation:
 ```
-@misc{zhang2023dozerformer,
-      title={Dozerformer: Sequence Adaptive Sparse Transformer for Multivariate Time Series Forecasting}, 
-      author={Yifan Zhang and Rui Wu and Sergiu M. Dascalu and Frederick C. Harris Jr au2},
-      year={2023},
-      eprint={2312.06874},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@article{zhang2024sparse,
+  title={Sparse transformer with local and seasonal adaptation for multivariate time series forecasting},
+  author={Zhang, Yifan and Wu, Rui and Dascalu, Sergiu M and Harris Jr, Frederick C},
+  journal={Scientific Reports},
+  volume={14},
+  number={1},
+  pages={15909},
+  year={2024},
+  publisher={Nature Publishing Group UK London},
+  doi={https://doi.org/10.1038/s41598-024-66886-1}
 }
 ```
 
