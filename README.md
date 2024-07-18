@@ -1,6 +1,5 @@
 # Dozerformer
-Code of paper ["Dozerformer: Sparse transformer with local and seasonal adaptation for multivariate time series forecasting
-"] (https://www.nature.com/articles/s41598-024-66886-1)
+Code of paper [Dozerformer: Sparse transformer with local and seasonal adaptation for multivariate time series forecasting](https://www.nature.com/articles/s41598-024-66886-1)
 
 The Dozerformer achieves SOTA on nine benchmarks.
 
