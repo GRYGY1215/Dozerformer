@@ -3,14 +3,13 @@ import torch.nn as nn
 import torch
 from models.my_method.Attentions.attention_masking import TriangularCausalMask
 import numpy as np
-from einops import einsum
+from einops import einsum, rearrange
 
 
 class DozerAttention(nn.Module):
     def __init__(self, local_window, stride, rand_rate, vary_len, pred_len, mask_flag=True, scale=None, attention_dropout=0.1, output_attention=False):
         super(DozerAttention, self).__init__()
         self.scale = scale
-
         self.local_window = local_window
         self.stride = stride
         self.rand_rate = rand_rate
@@ -26,9 +25,7 @@ class DozerAttention(nn.Module):
         _, L_K, _, _ = keys.shape
         scale = self.scale or 1. / sqrt(D)
 
-        scores = torch.einsum("blhe,bshe->bhls", queries, keys)
-
-        sparse_mask = torch.zeros(L_Q, L_K, device=scores.device)
+        sparse_mask = torch.zeros(L_Q, L_K, device=queries.device)
         # Self Attention
         if L_Q == L_K:
             if self.local_window:
@@ -49,10 +46,10 @@ class DozerAttention(nn.Module):
                 local_window = self.local_window//2 if self.local_window>1 else self.local_window
                 sparse_mask[:, -local_window:] = 1
 
-            # 2. Stride
             if self.stride:
                 start_index = L_K - L_Q//2
                 stride = self.stride + 1
+                # 未来和过去
                 for w_idx in range(start_index, L_K, stride):
                     sparse_mask = torch.diagonal_scatter(sparse_mask,
                                                          torch.ones(len(torch.diagonal(sparse_mask, w_idx))),
@@ -63,19 +60,23 @@ class DozerAttention(nn.Module):
                                                          w_idx)
 
             if self.vary_len or type(self.vary_len) is int:
-                start_index = -self.pred_len+self.vary_len-1
-                var_len_mask = torch.tril(torch.ones(L_Q, L_K, device=scores.device), diagonal=start_index)
+                # 2024五月二十四日更改
+                start_index = -(L_Q - self.pred_len)+self.vary_len-1
+                var_len_mask = torch.tril(torch.ones(L_Q, L_K, device=queries.device), diagonal=start_index)
                 var_len_mask = torch.flip(var_len_mask, [1])
                 sparse_mask = torch.where((sparse_mask + var_len_mask) >= 1, 1, 0)
+                # a = sparse_mask.detach().cpu().numpy()
 
-        scores = scores * sparse_mask
+        scores = torch.zeros(B, H, L_Q, L_K).to(queries.device)
+        for i in range(L_Q):
+            seleted_keys_idxs = rearrange(sparse_mask[i, :].nonzero(), 'dim1 dim2 -> (dim1 dim2)')
+            scores[:, :, i:i+1, seleted_keys_idxs] = torch.einsum("blhe,bshe->bhls", queries[:, i:i+1, :, :], keys[:, seleted_keys_idxs, :, :])
 
         if self.mask_flag:
             if attn_mask is None:
                 attn_mask = TriangularCausalMask(B, L_Q, device=queries.device)
             # attn_mask is bool
             scores.masked_fill_(attn_mask.mask, -np.inf)
-        b = scores[0, 0, :, :].detach().cpu().numpy()
         A = self.dropout(torch.softmax(scale * scores, dim=-1))
         V = torch.einsum("bhls,bshd->blhd", A, values)
 
